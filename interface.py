@@ -39,11 +39,8 @@ class Interface(tk.Tk):
         bouton_clean.grid(row=0, column=1, padx=20)
         self.label_prediction = tk.Label(frame_bouton, text='', bg='#EDD4EF')
         self.label_prediction.grid(row=1, columnspan=2)
-        self.i = 0
-
 
     def prediction(self):
-        self.i += 1
         self.canvas.postscript(file = f'number.eps')
         img = Image.open(f'number.eps')
         img.save(f'number' + '.png', 'png') 
@@ -51,10 +48,9 @@ class Interface(tk.Tk):
         image = cv2.resize(image, (28, 28))
         # cv2.imshow('Image', image) 
         # cv2.waitKey(0)
-        image = image.reshape(1, 28, 28, 1)
+        image = image.reshape(-1, 28, 28, 1)
         model = tf.keras.models.load_model('reco_chiffre')
-        probability_model = keras.Sequential([model, tf.keras.layers.Softmax()])
-        prediction = probability_model.predict(image)
+        prediction = model.predict(image)
         prediction = np.argmax(prediction, axis=1)[0]
         self.label_prediction.configure(text=prediction, font=('Helvetica', 20))
 
